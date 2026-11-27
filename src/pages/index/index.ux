@@ -1,0 +1,48 @@
+<template>
+  <div class="page">
+    <text class="phase">{{ phaseText }}</text>
+    <text class="time">{{ mm }}:{{ ss }}</text>
+    <text class="round">第 {{ round }} 轮 · 已完成 {{ done }} 个番茄</text>
+    <div class="row">
+      <text class="btn primary" onclick="toggle">{{ running ? '暂停' : '开始' }}</text>
+      <text class="btn" onclick="reset">重置</text>
+    </div>
+    <div class="row">
+      <text class="chip" onclick="setMode(25)">专注 25</text>
+      <text class="chip" onclick="setMode(5)">休息 5</text>
+      <text class="chip" onclick="setMode(15)">长休 15</text>
+    </div>
+  </div>
+</template>
+<style>
+  .page { flex-direction: column; align-items: center; width: 432px; height: 514px; background-color: #000; padding: 32px; }
+  .phase { color: #ff453a; font-size: 34px; }
+  .time { color: #fff; font-size: 110px; margin: 20px 0; }
+  .round { color: #8a8a8a; font-size: 26px; margin-bottom: 28px; }
+  .row { flex-direction: row; margin-bottom: 16px; }
+  .btn { width: 150px; height: 72px; border-radius: 36px; background-color: #1c1c1e; color: #fff; font-size: 32px; text-align: center; margin: 0 8px; }
+  .primary { background-color: #ff453a; }
+  .chip { width: 116px; height: 60px; border-radius: 30px; background-color: #1c1c1e; color: #fff; font-size: 26px; text-align: center; margin: 0 6px; }
+</style>
+<script>
+import vibrator from "@system.vibrator"
+export default {
+  private: { total: 1500, left: 1500, running: false, timer: null, round: 1, done: 0, phaseText: "专注" },
+  get mm() { return String(Math.floor(this.left / 60)).padStart(2, "0") },
+  get ss() { return String(this.left % 60).padStart(2, "0") },
+  setMode(min) { this.stop(); this.total = this.left = min * 60; this.phaseText = min === 25 ? "专注" : "休息" },
+  toggle() { this.running ? this.stop() : this.start() },
+  start() {
+    this.running = true
+    this.timer = setInterval(() => {
+      if (--this.left <= 0) {
+        this.stop(); vibrator.vibrate({ mode: "long" })
+        if (this.phaseText === "专注") { this.done++; this.setMode(5) } else { this.round++; this.setMode(25) }
+      }
+    }, 1000)
+  },
+  stop() { this.running = false; if (this.timer) clearInterval(this.timer) },
+  reset() { this.stop(); this.left = this.total },
+  onDestroy() { this.stop() }
+}
+</script>
