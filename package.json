@@ -1,0 +1,13 @@
+{
+  "name": "redmi-watch6-pomodoro",
+  "version": "1.0.0",
+  "description": "为 Redmi Watch 6 打造的番茄钟 Vela 快应用：25/5/15 三种时长、到时震动提醒、轮次与完成数统计，纯离线运行。",
+  "scripts": {
+    "build": "aiot build",
+    "release": "aiot release",
+    "watch": "aiot watch"
+  },
+  "devDependencies": {
+    "@aiot-toolkit/aiot": "^2.0.0"
+  }
+}
